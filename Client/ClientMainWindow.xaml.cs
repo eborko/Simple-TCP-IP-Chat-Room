@@ -17,30 +17,40 @@ namespace Client
 
             admonteClient = new AdmonteClient();
             admonteClient.ClientConnected += AdmonteClient_ClientConnected;
+            admonteClient.ClientDisconnected += AdmonteClient_ClientDisconnected;
+            admonteClient.MessageSent += AdmonteClient_MessageSent;
 
             btnDisconnect.IsEnabled = false;
             btnSendMessage.IsEnabled = false;
         }
 
+        private void AdmonteClient_MessageSent(object? sender, EventArgs e)
+        {
+            rtbStatus.AppendText("Message sent.\n");
+        }
+
+        private void AdmonteClient_ClientDisconnected(object? sender, EventArgs e)
+        {
+            rtbStatus.AppendText("Disconnected from the server\n");
+        }
+
         private void AdmonteClient_ClientConnected(object? sender, EventArgs e)
         {
-            txtMessage.AppendText("Connected to server.");
+            rtbStatus.AppendText("Connected to the server.\n");
         }
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            admonteClient = new AdmonteClient();
             admonteClient.ConnectTo(txtHost.Text, txtPort.Text);
 
             btnConnect.IsEnabled = false;
             btnSendMessage.IsEnabled = true;
+            btnDisconnect.IsEnabled = true;
         }
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
             admonteClient.Disconnect();
-
-            txtMessage.AppendText("Disconnected from server.");
 
             btnDisconnect.IsEnabled = false;
             btnConnect.IsEnabled = true;
@@ -49,7 +59,7 @@ namespace Client
 
         private void btnSendMessage_Click(object sender, RoutedEventArgs e)
         {
-
+            admonteClient.SendMessage(txtMessage.Text);
         }
     }
 }

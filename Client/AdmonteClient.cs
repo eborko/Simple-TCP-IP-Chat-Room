@@ -8,14 +8,14 @@ namespace Client
     {
         private IPAddress? _hostAddress;
         private int _portNumber;
-        private TcpClient _tcpClient;
         private readonly Socket _socket;
         private IPEndPoint? _endPoint;
 
         public AdmonteClient() 
-        { 
-            _tcpClient = new TcpClient();
+        {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            
+
         }
 
         public void ConnectTo(string hostAddress, string portNumber)
@@ -27,16 +27,16 @@ namespace Client
                 throw new ArgumentException("Given argument PortNumber is not valid.");
 
             this._endPoint = new IPEndPoint(_hostAddress, _portNumber);
-            //_tcpClient.Connect(_endPoint);
+            this._socket.Bind(this._endPoint);
             _socket.Connect(_endPoint);
 
-            if (ClientConnected != null)
+            if (ClientConnected != null && _socket.Connected)
                 ClientConnected(this, new EventArgs());
         }
 
         public void Disconnect()
         {
-            _tcpClient.Close();
+            _socket.Disconnect(true);
 
             if(ClientDisconnected != null)
                 ClientDisconnected(this, new EventArgs());
