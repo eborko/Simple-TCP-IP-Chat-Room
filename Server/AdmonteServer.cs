@@ -15,7 +15,8 @@ namespace Server
         private readonly int _portNumber;
         // Endpoint contains IPAddress and port number
         private TcpClient? _client;
-        private readonly TcpListener _listener;
+        private TcpListener? _listener;
+        private NetworkStream _stream;
 
         /// <summary>
         /// Constructor of Server
@@ -32,8 +33,6 @@ namespace Server
             // Try to parse port number from string.
             if(!Int32.TryParse(portNumber, out _portNumber))
                 throw new ArgumentException("Given argument PortNumber is not valid.");
-
-            this._listener = new TcpListener(_hostAddress, _portNumber);
         }
 
         #region Events
@@ -48,49 +47,54 @@ namespace Server
         {
             try
             {
-                _listener.Start();
+                _listener = new TcpListener(_hostAddress, _portNumber);
                 OnStart?.Invoke(this, new EventArgs());
 
                 // Use default buffer size 8192
                 byte[] buffer = new byte[8192];
                 string? message = null;
+                NetworkStream _stream = null;
 
                 while (true)
                 {
                     OnWaitForClient?.Invoke(this, new EventArgs());
+                    _listener.Start();
 
                     this._client = _listener.AcceptTcpClient();
                     OnClientConnected?.Invoke(this, new EventArgs());
 
                     message = null;
 
-                    NetworkStream stream = _client.GetStream();
+                    _stream = _client.GetStream();
 
                     // uncomment if default buffer size is not used
                     //_client.ReceiveBufferSize = buffer.Length;
 
                     int i;
 
-                    while ((i = stream.Read(buffer, 0, buffer.Length)) != 0)
+                    while ((i = _stream.Read(buffer, 0, buffer.Length)) != 0)
                     {
                         message = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, i);
-                        OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, "localhost", _portNumber));
+                        OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, _hostAddress.ToString(), _portNumber));
                     }
-                    OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message + " <- FINAL_MESSAGE", "localhost", _portNumber));
-                    _client.Close();
-                    
+                    _stream?.Close();
+                    _client?.Close();
                 }
             }
-            finally
+            catch (InvalidOperationException ex)
             {
-                _listener.Stop();
+                // TODOO: Log error
+            }
+            catch (Exception ex)
+            {
+                // TODOO: Log error
             }
         }
 
-        public void Stop()
+        public async void Stop()
         {
-            Console.WriteLine("Stopping ...");
-
+            _client = null;
+            _listener?.Server.Close();
             OnStop?.Invoke(this, new EventArgs());
         }
     }

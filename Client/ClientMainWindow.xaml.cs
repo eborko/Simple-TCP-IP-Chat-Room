@@ -19,9 +19,15 @@ namespace Client
             admonteClient.ClientConnected += AdmonteClient_ClientConnected;
             admonteClient.ClientDisconnected += AdmonteClient_ClientDisconnected;
             admonteClient.MessageSent += AdmonteClient_MessageSent;
+            admonteClient.ServerConnectionFailed += AdmonteClient_ServerConnectionFailed;
 
             btnDisconnect.IsEnabled = false;
             btnSendMessage.IsEnabled = false;
+        }
+
+        private void AdmonteClient_ServerConnectionFailed(object? sender, EventArgs e)
+        {
+            rtbStatus.AppendText("Server is not responding...\n");
         }
 
         private void AdmonteClient_MessageSent(object? sender, EventArgs e)

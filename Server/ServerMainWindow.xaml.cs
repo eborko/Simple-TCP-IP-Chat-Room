@@ -39,7 +39,7 @@ namespace Server
             #endregion
 
             // start thread
-            _backgroundWorker.WorkerSupportsCancellation = false;
+            _backgroundWorker.WorkerSupportsCancellation = true;
             if (!_backgroundWorker.IsBusy)
             {
                 _backgroundWorker.RunWorkerAsync();
@@ -65,18 +65,19 @@ namespace Server
 
         private void Server_OnStop(object? sender, EventArgs e)
         {
-            rtbMessages.AppendText("Server stopped.\n");
+            this.Dispatcher.Invoke(() => rtbMessages.AppendText("Server stopped.\n"));
         }
 
         private void ServerMessageReceived_EventHandler(object? sender, AdmonteMessageEventArgs? args)
         {
             ArgumentNullException.ThrowIfNull(args, null);
-            rtbMessages.AppendText($"Message received:\n\tHost: {args.Host}, Port: {args.Port}\n\tMessage: {args.Message}\n");
+            this.Dispatcher.Invoke(() => rtbMessages.AppendText($"Message received:\n\tHost: {args.Host}, Port: {args.Port}\n\tMessage: {args.Message}\n"));
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             server?.Stop();
+            _backgroundWorker.CancelAsync();
 
             btnStart.IsEnabled = true;
         }
