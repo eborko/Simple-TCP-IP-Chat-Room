@@ -1,0 +1,29 @@
+﻿<Window x:Class="Client.ClientMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="Client" SizeToContent="WidthAndHeight">
+    <DockPanel LastChildFill="False">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightBlue">
+            <Label Margin="5">Host:</Label>
+            <TextBox  Margin="5" x:Name="txtHost" Width="200"></TextBox>
+
+            <Label  Margin="5">Port:</Label>
+            <TextBox  Margin="5" x:Name="txtPort" Width="100"></TextBox>
+
+            <Button Margin="5" x:Name="btnConnect" Width="70" Click="btnConnect_Click">Connect</Button>
+            <Button Margin="5" x:Name="btnDisconnect" Width="90" Click="btnDisconnect_Click">Disconnect</Button>
+        </StackPanel>
+        <StackPanel Margin="5" DockPanel.Dock="Bottom" MaxWidth="600">
+            <Label>Message:</Label>
+            <TextBox Margin="5" x:Name="txtMessage"></TextBox>
+            <Button x:Name="btnSendMessage" Margin="5" Click="btnSendMessage_Click">Send Message</Button>
+            <Label>Status:</Label>
+            <RichTextBox x:Name="rtbStatus" Margin="5" Height="100"></RichTextBox>
+        </StackPanel>
+        
+    </DockPanel>
+</Window>
