@@ -14,9 +14,8 @@ namespace Server
         // Port number to listen
         private readonly int _portNumber;
         // Endpoint contains IPAddress and port number
-        private IPEndPoint _endPoint;
-        // Basic socket by Berkeley
-        private Socket? _socket;
+        private TcpClient? _client;
+        private readonly TcpListener _listener;
 
         /// <summary>
         /// Constructor of Server
@@ -34,37 +33,65 @@ namespace Server
             if(!Int32.TryParse(portNumber, out _portNumber))
                 throw new ArgumentException("Given argument PortNumber is not valid.");
 
-            this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            this._endPoint = new IPEndPoint(_hostAddress, _portNumber);
-            this._socket.Bind(this._endPoint);
+            this._listener = new TcpListener(_hostAddress, _portNumber);
         }
 
         #region Events
         public event EventHandler<AdmonteMessageEventArgs>? OnMessageReceived;
         public event EventHandler<EventArgs>? OnStart;
         public event EventHandler<EventArgs>? OnStop;
+        public event EventHandler<EventArgs>? OnClientConnected;
+        public event EventHandler<EventArgs>? OnWaitForClient;
         #endregion
 
         public void Start()
         {
-            Console.WriteLine("Starting ...");
+            try
+            {
+                _listener.Start();
+                OnStart?.Invoke(this, new EventArgs());
 
-            if (_socket == null)
-                return;
+                // Use default buffer size 8192
+                byte[] buffer = new byte[8192];
+                string? message = null;
 
-            this._socket.Connect(this._endPoint);
+                while (true)
+                {
+                    OnWaitForClient?.Invoke(this, new EventArgs());
 
-            if (OnStart != null && this._socket.Connected)
-                OnStart(this, new EventArgs());
+                    this._client = _listener.AcceptTcpClient();
+                    OnClientConnected?.Invoke(this, new EventArgs());
+
+                    message = null;
+
+                    NetworkStream stream = _client.GetStream();
+
+                    // uncomment if default buffer size is not used
+                    //_client.ReceiveBufferSize = buffer.Length;
+
+                    int i;
+
+                    while ((i = stream.Read(buffer, 0, buffer.Length)) != 0)
+                    {
+                        message = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, i);
+                        OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, "localhost", _portNumber));
+                    }
+                    OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message + " <- FINAL_MESSAGE", "localhost", _portNumber));
+                    _client.Close();
+                    
+                }
+            }
+            finally
+            {
+                _listener.Stop();
+            }
         }
 
         public void Stop()
         {
             Console.WriteLine("Stopping ...");
-            this._socket?.Disconnect(true);
 
-            if (OnStop != null)
-                OnStop(this, new EventArgs());
+            OnStop?.Invoke(this, new EventArgs());
         }
     }
 }

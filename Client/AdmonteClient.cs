@@ -14,8 +14,6 @@ namespace Client
         public AdmonteClient() 
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            
-
         }
 
         public void ConnectTo(string hostAddress, string portNumber)
@@ -27,27 +25,25 @@ namespace Client
                 throw new ArgumentException("Given argument PortNumber is not valid.");
 
             this._endPoint = new IPEndPoint(_hostAddress, _portNumber);
-            this._socket.Bind(this._endPoint);
+            this._socket.Bind(this._endPoint); // THERE IS THTOWN EXCEPTION -> Only one usage of each socket address (protocol/network address/port) is normally permitted.
             _socket.Connect(_endPoint);
 
-            if (ClientConnected != null && _socket.Connected)
-                ClientConnected(this, new EventArgs());
+            if (_socket.Connected)
+                ClientConnected?.Invoke(this, new EventArgs());
         }
 
         public void Disconnect()
         {
             _socket.Disconnect(true);
 
-            if(ClientDisconnected != null)
-                ClientDisconnected(this, new EventArgs());
+            ClientDisconnected?.Invoke(this, new EventArgs());
         }
 
         public void SendMessage(string message)
         {
-            this._socket.SendTo(System.Text.Encoding.ASCII.GetBytes(message), 0, _endPoint);
+            this._socket.SendTo(System.Text.Encoding.ASCII.GetBytes(message), 0, this._endPoint);
 
-            if (MessageSent != null)
-                MessageSent(this, new EventArgs());
+            MessageSent?.Invoke(this, new EventArgs());
         }
 
         #region Events
