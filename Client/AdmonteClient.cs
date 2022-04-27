@@ -4,6 +4,9 @@ using System.Net;
 
 namespace Client
 {
+    /// <summary>
+    /// This class provides main logic for client app
+    /// </summary>
     public class AdmonteClient
     {
         private IPAddress? _hostAddress;
@@ -18,10 +21,16 @@ namespace Client
         public bool ConnectTo(string hostAddress, string portNumber)
         {
             if (!IPAddress.TryParse(hostAddress, out _hostAddress))
-                throw new ArgumentException("Given argument HostAddress is not valid.");
+            {
+                ServerConnectionFailed?.Invoke(this, new EventArgs());
+                return false;
+            }
 
             if (!Int32.TryParse(portNumber, out _portNumber))
-                throw new ArgumentException("Given argument PortNumber is not valid.");
+            {
+                ServerConnectionFailed?.Invoke(this, new EventArgs());
+                return false;
+            }
 
             _client = new TcpClient();
             try
@@ -45,12 +54,18 @@ namespace Client
             ClientDisconnected?.Invoke(this, new EventArgs());
         }
 
-        public void SendMessage(string message)
+        public bool SendMessage(string message)
         {
+            if (!_client.Connected)
+            {
+                ServerConnectionFailed?.Invoke(this, new EventArgs());
+                return false;
+            }
+                
             try
             {
                 NetworkStream stream = _client.GetStream();
-                if (stream == null) return;
+                if (stream == null) return false;
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
                 stream.Write(buffer, 0, buffer.Length);
 
@@ -60,6 +75,8 @@ namespace Client
             {
                 // TODOO: Log error
             }
+
+            return true;
         }
 
         #region Events

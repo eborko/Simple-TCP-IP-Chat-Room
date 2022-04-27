@@ -66,7 +66,8 @@ namespace Client
 
         private void btnSendMessage_Click(object sender, RoutedEventArgs e)
         {
-            admonteClient.SendMessage(txtMessage.Text);
+            if (!admonteClient.SendMessage(txtMessage.Text))
+                rtbStatus.AppendText("Unable to send a message to the server.\n");
         }
     }
 }
