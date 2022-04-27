@@ -47,7 +47,8 @@ namespace Client
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            admonteClient.ConnectTo(txtHost.Text, txtPort.Text);
+            if (!admonteClient.ConnectTo(txtHost.Text, txtPort.Text))
+                return;
 
             btnConnect.IsEnabled = false;
             btnSendMessage.IsEnabled = true;

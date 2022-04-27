@@ -15,7 +15,7 @@ namespace Client
             
         }
 
-        public void ConnectTo(string hostAddress, string portNumber)
+        public bool ConnectTo(string hostAddress, string portNumber)
         {
             if (!IPAddress.TryParse(hostAddress, out _hostAddress))
                 throw new ArgumentException("Given argument HostAddress is not valid.");
@@ -30,12 +30,13 @@ namespace Client
             }
             catch (Exception ex)
             {
-                // TODOO: Log error
-                return;
+                ServerConnectionFailed?.Invoke(this, new EventArgs());
+                return false;
             }
 
             if (_client.Connected)
                 ClientConnected?.Invoke(this, new EventArgs());
+            return true;
         }
 
         public void Disconnect()
@@ -46,11 +47,19 @@ namespace Client
 
         public void SendMessage(string message)
         {
-            NetworkStream stream = _client.GetStream();
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
-            stream.Write(buffer, 0, buffer.Length);
+            try
+            {
+                NetworkStream stream = _client.GetStream();
+                if (stream == null) return;
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
+                stream.Write(buffer, 0, buffer.Length);
 
-            MessageSent?.Invoke(this, new EventArgs());
+                MessageSent?.Invoke(this, new EventArgs());
+            }
+            catch (Exception ex)
+            {
+                // TODOO: Log error
+            }
         }
 
         #region Events

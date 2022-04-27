@@ -93,7 +93,7 @@ namespace Server
 
         public async void Stop()
         {
-            _client = null;
+            _client.Close();
             _listener?.Server.Close();
             OnStop?.Invoke(this, new EventArgs());
         }
