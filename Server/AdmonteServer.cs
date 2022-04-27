@@ -28,17 +28,11 @@ namespace Server
         {
             // Try to parse address from string.
             if (!IPAddress.TryParse(hostAddress, out _hostAddress))
-            {
-                OnInvalidServerParameters?.Invoke(this, new EventArgs());
                 throw new ArgumentNullException("HostAddress");
-            }
 
             // Try to parse port number from string.
             if(!Int32.TryParse(portNumber, out _portNumber))
-            {
-                OnInvalidServerParameters?.Invoke(this, new EventArgs());
                 throw new ArgumentNullException("PortNumber");
-            }
         }
 
         #region Events
