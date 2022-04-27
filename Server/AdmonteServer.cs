@@ -13,9 +13,6 @@ namespace Server
         private readonly IPAddress? _hostAddress;
         // Port number to listen
         private readonly int _portNumber;
-        // Endpoint contains IPAddress and port number
-        private TcpClient? _client;
-        //private TcpListener? _listener;
         private Socket _server;
 
         /// <summary>
@@ -56,24 +53,24 @@ namespace Server
                 // Use default buffer size 8192
                 byte[] buffer = new byte[8192];
                 string? message = null;
-                Socket client;
 
                 while (true)
                 {
                     OnWaitForClient?.Invoke(this, new EventArgs());
-
+                    Socket client;
                     client = _server.Accept();
+
                     OnClientConnected?.Invoke(this, new EventArgs());
 
                     message = null;
 
-                    int i;
-                    while ((i = client.Receive(buffer, 0, buffer.Length, SocketFlags.None)) > 0)
-                    {
-                        message = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, i);
+                    int i = client.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                    message = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, i);
+
+                    if (message != "")
                         OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, client.RemoteEndPoint.ToString(), _portNumber));
-                    }
-                    _client?.Close();
+                    
+                    client?.Close();
                 }
             }
             catch (InvalidOperationException ex)
@@ -88,7 +85,6 @@ namespace Server
 
         public void Stop()
         {
-            _client?.Close();
             _server?.Close();
             OnStop?.Invoke(this, new EventArgs());
         }

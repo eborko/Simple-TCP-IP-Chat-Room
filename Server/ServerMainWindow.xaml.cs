@@ -57,6 +57,7 @@ namespace Server
             }
 
             btnStart.IsEnabled = false;
+            btnStop.IsEnabled = true;
         }
 
         private void Server_OnInvalidServerParameters(object? sender, EventArgs e)
@@ -97,6 +98,7 @@ namespace Server
                 _backgroundWorker.CancelAsync();
 
             btnStart.IsEnabled = true;
+            btnStop.IsEnabled = false;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Client
     /// </summary>
     public class AdmonteClient
     {
-        private IPAddress? _hostAddress;
+        private IPAddress? _serverAddress;
         private int _portNumber;
         private TcpClient? _client;
 
@@ -18,24 +18,18 @@ namespace Client
             
         }
 
-        public bool ConnectTo(string hostAddress, string portNumber)
+        public bool ConnectTo(string serverAddress, string portNumber)
         {
-            if (!IPAddress.TryParse(hostAddress, out _hostAddress))
-            {
-                ServerConnectionFailed?.Invoke(this, new EventArgs());
-                return false;
-            }
+            if (!IPAddress.TryParse(serverAddress, out _serverAddress))
+                throw new ArgumentNullException(nameof(_serverAddress));
 
             if (!Int32.TryParse(portNumber, out _portNumber))
-            {
-                ServerConnectionFailed?.Invoke(this, new EventArgs());
-                return false;
-            }
+                throw new ArgumentNullException(nameof(_portNumber));
 
             _client = new TcpClient();
             try
             {
-                _client.Connect(_hostAddress, _portNumber);
+                _client.Connect(_serverAddress, _portNumber);
             }
             catch (Exception ex)
             {
