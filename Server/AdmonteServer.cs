@@ -33,12 +33,9 @@ namespace Server
             // Try to parse port number from string.
             if(!Int32.TryParse(portNumber, out _portNumber))
                 throw new ArgumentNullException("PortNumber");
-<<<<<<< HEAD
-=======
 
             _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _server.Bind(new IPEndPoint(IPAddress.Any, _portNumber));
->>>>>>> Sockets1
         }
 
         #region Events

@@ -50,7 +50,7 @@ namespace Client
 
         public void Disconnect()
         {
-            _client.Close();
+            _client?.Close();
             ClientDisconnected?.Invoke(this, new EventArgs());
         }
 
