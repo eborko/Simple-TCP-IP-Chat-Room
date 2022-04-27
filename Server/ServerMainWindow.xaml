@@ -10,7 +10,7 @@
     </Window.Resources>
     <DockPanel LastChildFill="False">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightBlue">
-            <Label Margin="5">Host:</Label>
+            <Label Margin="5">Server Address:</Label>
             <TextBox  Margin="5" x:Name="txtHost" Width="200"></TextBox>
             
             <Label  Margin="5">Port:</Label>
@@ -20,8 +20,8 @@
             <Button Margin="5" x:Name="btnStop" Width="60" Click="btnStop_Click">Stop</Button>
         </StackPanel>
         <StackPanel Margin="5" DockPanel.Dock="Left">
-            <Label>Messages:</Label>
-            <RichTextBox x:Name="rtbMessages" Width="540" Height="200" ></RichTextBox>
+            <Label>Staus messages:</Label>
+            <RichTextBox x:Name="rtbMessages" Width="600" Height="200" ></RichTextBox>
         </StackPanel>
     </DockPanel>
 </Window>

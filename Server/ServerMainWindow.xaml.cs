@@ -11,6 +11,7 @@ namespace Server
     public partial class ServerMainWindow : Window
     {
         private AdmonteServer? server;
+        private bool _isServerStarted;
         private BackgroundWorker _backgroundWorker;
 
         public ServerMainWindow()
@@ -27,15 +28,26 @@ namespace Server
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            server = new AdmonteServer(txtHost.Text, txtPort.Text);
-            if (server == null) return;
-
+            try
+            {
+                server = new AdmonteServer(txtHost.Text, txtPort.Text);
+                _isServerStarted = true;
+            }
+            catch (ArgumentNullException ex)
+            {
+                _isServerStarted = false;
+                rtbMessages.AppendText(ex.Message + "\n");
+                return;
+            }
+            
+            
             #region subscribe to events
             server.OnMessageReceived += ServerMessageReceived_EventHandler;
             server.OnStart += Server_OnStart;
             server.OnStop += Server_OnStop;
             server.OnClientConnected += Server_OnClientConnected;
             server.OnWaitForClient += Server_OnWaitForClient;
+            server.OnInvalidServerParameters += Server_OnInvalidServerParameters;
             #endregion
 
             // start thread
@@ -46,6 +58,11 @@ namespace Server
             }
 
             btnStart.IsEnabled = false;
+        }
+
+        private void Server_OnInvalidServerParameters(object? sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(() => rtbMessages.AppendText("Bad server address.\n"));
         }
 
         private void Server_OnWaitForClient(object? sender, EventArgs e)
@@ -77,7 +94,8 @@ namespace Server
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             server?.Stop();
-            _backgroundWorker.CancelAsync();
+            if (_backgroundWorker.WorkerSupportsCancellation)
+                _backgroundWorker.CancelAsync();
 
             btnStart.IsEnabled = true;
         }

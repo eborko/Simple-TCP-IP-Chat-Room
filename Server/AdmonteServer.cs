@@ -28,11 +28,17 @@ namespace Server
         {
             // Try to parse address from string.
             if (!IPAddress.TryParse(hostAddress, out _hostAddress))
-                throw new ArgumentException("Given argument HostAddress is not valid.");
+            {
+                OnInvalidServerParameters?.Invoke(this, new EventArgs());
+                throw new ArgumentNullException("HostAddress");
+            }
 
             // Try to parse port number from string.
             if(!Int32.TryParse(portNumber, out _portNumber))
-                throw new ArgumentException("Given argument PortNumber is not valid.");
+            {
+                OnInvalidServerParameters?.Invoke(this, new EventArgs());
+                throw new ArgumentNullException("PortNumber");
+            }
         }
 
         #region Events
@@ -41,6 +47,7 @@ namespace Server
         public event EventHandler<EventArgs>? OnStop;
         public event EventHandler<EventArgs>? OnClientConnected;
         public event EventHandler<EventArgs>? OnWaitForClient;
+        public event EventHandler<EventArgs>? OnInvalidServerParameters;
         #endregion
 
         public void Start()
