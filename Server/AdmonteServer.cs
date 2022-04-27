@@ -15,8 +15,8 @@ namespace Server
         private readonly int _portNumber;
         // Endpoint contains IPAddress and port number
         private TcpClient? _client;
-        private TcpListener? _listener;
-        private NetworkStream _stream;
+        //private TcpListener? _listener;
+        private Socket _server;
 
         /// <summary>
         /// Constructor of Server
@@ -33,6 +33,9 @@ namespace Server
             // Try to parse port number from string.
             if(!Int32.TryParse(portNumber, out _portNumber))
                 throw new ArgumentNullException("PortNumber");
+
+            _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _server.Bind(new IPEndPoint(IPAddress.Any, _portNumber));
         }
 
         #region Events
@@ -41,44 +44,35 @@ namespace Server
         public event EventHandler<EventArgs>? OnStop;
         public event EventHandler<EventArgs>? OnClientConnected;
         public event EventHandler<EventArgs>? OnWaitForClient;
-        public event EventHandler<EventArgs>? OnInvalidServerParameters;
         #endregion
 
         public void Start()
         {
             try
             {
-                _listener = new TcpListener(_hostAddress, _portNumber);
+                _server.Listen(10000);
                 OnStart?.Invoke(this, new EventArgs());
 
                 // Use default buffer size 8192
                 byte[] buffer = new byte[8192];
                 string? message = null;
-                NetworkStream _stream = null;
+                Socket client;
 
                 while (true)
                 {
                     OnWaitForClient?.Invoke(this, new EventArgs());
-                    _listener.Start();
 
-                    this._client = _listener.AcceptTcpClient();
+                    client = _server.Accept();
                     OnClientConnected?.Invoke(this, new EventArgs());
 
                     message = null;
 
-                    _stream = _client.GetStream();
-
-                    // uncomment if default buffer size is not used
-                    //_client.ReceiveBufferSize = buffer.Length;
-
                     int i;
-
-                    while ((i = _stream.Read(buffer, 0, buffer.Length)) != 0)
+                    while ((i = client.Receive(buffer, 0, buffer.Length, SocketFlags.None)) > 0)
                     {
                         message = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, i);
-                        OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, _hostAddress.ToString(), _portNumber));
+                        OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, client.RemoteEndPoint.ToString(), _portNumber));
                     }
-                    _stream?.Close();
                     _client?.Close();
                 }
             }
@@ -92,10 +86,10 @@ namespace Server
             }
         }
 
-        public async void Stop()
+        public void Stop()
         {
-            _client.Close();
-            _listener?.Server.Close();
+            _client?.Close();
+            _server?.Close();
             OnStop?.Invoke(this, new EventArgs());
         }
     }

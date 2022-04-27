@@ -47,7 +47,6 @@ namespace Server
             server.OnStop += Server_OnStop;
             server.OnClientConnected += Server_OnClientConnected;
             server.OnWaitForClient += Server_OnWaitForClient;
-            server.OnInvalidServerParameters += Server_OnInvalidServerParameters;
             #endregion
 
             // start thread
