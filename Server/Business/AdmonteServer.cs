@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace Server
+namespace Server.Business
 {
     /// <summary>
     /// Class AdmonteServer represents main logic for server app

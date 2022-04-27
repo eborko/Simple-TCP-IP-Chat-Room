@@ -20,7 +20,7 @@
             <Button Margin="5" x:Name="btnStop" Width="60" Click="btnStop_Click">Stop</Button>
         </StackPanel>
         <StackPanel Margin="5" DockPanel.Dock="Left">
-            <Label>Staus messages:</Label>
+            <Label>Log messages:</Label>
             <RichTextBox x:Name="rtbMessages" Width="600" Height="200" ></RichTextBox>
         </StackPanel>
     </DockPanel>
