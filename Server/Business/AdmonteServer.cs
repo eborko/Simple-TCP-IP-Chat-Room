@@ -14,6 +14,7 @@ namespace Server.Business
         // Port number to listen
         private readonly int _portNumber;
         private Socket _server;
+        public bool IsServerStarted { get; set; }
 
         /// <summary>
         /// Constructor of Server
@@ -49,6 +50,7 @@ namespace Server.Business
             {
                 _server.Listen(10000);
                 OnStart?.Invoke(this, new EventArgs());
+                this.IsServerStarted = true;
 
                 // Use default buffer size 8192
                 byte[] buffer = new byte[8192];
@@ -86,6 +88,7 @@ namespace Server.Business
         public void Stop()
         {
             _server?.Close();
+            IsServerStarted = false;
             OnStop?.Invoke(this, new EventArgs());
         }
     }
