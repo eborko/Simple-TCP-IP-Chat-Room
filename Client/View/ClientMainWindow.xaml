@@ -8,7 +8,7 @@
         Title="Admonte Client" SizeToContent="WidthAndHeight">
     <DockPanel LastChildFill="False">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightBlue">
-            <Label Margin="5">Host:</Label>
+            <Label Margin="5">Server address:</Label>
             <TextBox  Margin="5" x:Name="txtHost" Width="200"></TextBox>
 
             <Label  Margin="5">Port:</Label>
