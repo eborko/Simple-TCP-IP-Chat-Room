@@ -5,23 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server"
         mc:Ignorable="d"
-        Title="Server" SizeToContent="WidthAndHeight">
+        Title="Admonte Server" SizeToContent="WidthAndHeight">
     <Window.Resources>
     </Window.Resources>
     <DockPanel LastChildFill="False">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightBlue">
             <Label Margin="5">Server Address:</Label>
-            <TextBox  Margin="5" x:Name="txtHost" Width="200"></TextBox>
+            <TextBox  Margin="5" x:Name="txtHost" Width="200" Text="{Binding Path=ServerAddress, Mode=TwoWay}"></TextBox>
             
             <Label  Margin="5">Port:</Label>
-            <TextBox  Margin="5" x:Name="txtPort" Width="100"></TextBox>
-            
-            <Button Margin="5" x:Name="btnStart" Width="60" Click="btnStart_Click">Start</Button>
-            <Button Margin="5" x:Name="btnStop" Width="60" Click="btnStop_Click">Stop</Button>
+            <TextBox  Margin="5" x:Name="txtPort" Width="100" Text="{Binding Path=ServerPort, Mode=TwoWay}"></TextBox>
+
+            <Button Margin="5" x:Name="btnStart" Width="60" Command="{Binding Path=StartServerCommand}">Start</Button>
+            <Button Margin="5" x:Name="btnStop" Width="60" Command="{Binding Path=StopServerCommand}">Stop</Button>
         </StackPanel>
         <StackPanel Margin="5" DockPanel.Dock="Left">
-            <Label>Staus messages:</Label>
-            <RichTextBox x:Name="rtbMessages" Width="600" Height="200" ></RichTextBox>
+            <Label>Log messages:</Label>
+            <ListBox x:Name="lbMessages" Width="600" Height="200" ItemsSource="{Binding Path=LogMessages, Mode=TwoWay}"></ListBox>
         </StackPanel>
     </DockPanel>
 </Window>

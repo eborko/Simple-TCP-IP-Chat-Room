@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace Server
+namespace Server.Business
 {
     /// <summary>
     /// Class AdmonteServer represents main logic for server app
@@ -14,6 +14,7 @@ namespace Server
         // Port number to listen
         private readonly int _portNumber;
         private Socket _server;
+        public bool IsStarted { get; private set; }
 
         /// <summary>
         /// Constructor of Server
@@ -41,14 +42,17 @@ namespace Server
         public event EventHandler<EventArgs>? OnStop;
         public event EventHandler<EventArgs>? OnClientConnected;
         public event EventHandler<EventArgs>? OnWaitForClient;
+        public event EventHandler<EventArgs>? OnError;
         #endregion
 
         public void Start()
         {
             try
             {
+                IsStarted = true;
                 _server.Listen(10000);
                 OnStart?.Invoke(this, new EventArgs());
+                
 
                 // Use default buffer size 8192
                 byte[] buffer = new byte[8192];
@@ -73,19 +77,17 @@ namespace Server
                     client?.Close();
                 }
             }
-            catch (InvalidOperationException ex)
-            {
-                // TODOO: Log error
-            }
             catch (Exception ex)
             {
-                // TODOO: Log error
+                OnError?.Invoke(this, new EventArgs());
+                Stop();
             }
         }
 
         public void Stop()
         {
             _server?.Close();
+            IsStarted = false;
             OnStop?.Invoke(this, new EventArgs());
         }
     }

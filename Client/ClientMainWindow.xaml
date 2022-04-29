@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Client" SizeToContent="WidthAndHeight">
+        Title="Admonte Client" SizeToContent="WidthAndHeight">
     <DockPanel LastChildFill="False">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="LightBlue">
             <Label Margin="5">Host:</Label>
