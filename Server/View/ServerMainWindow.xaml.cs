@@ -5,7 +5,7 @@ using System.ComponentModel;
 using Server.Business;
 using Server.ViewModel;
 
-namespace Server
+namespace Server.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
