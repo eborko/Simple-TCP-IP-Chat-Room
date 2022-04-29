@@ -1,3 +1,5 @@
+[![GitHub license](https://img.shields.io/github/license/eborko/Simple-TCP-IP-Chat-Room?label=licence)](https://github.com/eborko/Simple-TCP-IP-Chat-Room/blob/main/LICENSE)
+
 # TCP\IP Simple Chat Room
 Technology specification:
 C#, .NET 6, WPF, VisualStudio 2022 Community Edition
