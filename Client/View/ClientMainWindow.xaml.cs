@@ -1,8 +1,7 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
+﻿using Client.Business;
+using System;
 using System.Windows;
-namespace Client
+namespace Client.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

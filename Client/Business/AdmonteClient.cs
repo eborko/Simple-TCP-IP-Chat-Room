@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Net;
 
-namespace Client
+namespace Client.Business
 {
     /// <summary>
     /// This class provides main logic for client app
