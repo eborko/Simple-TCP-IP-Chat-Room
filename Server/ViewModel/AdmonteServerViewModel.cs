@@ -1,5 +1,5 @@
-﻿using Server.Business;
-using Server.Commands;
+﻿using AdmonteServer.Business;
+using SharedCodeLibrary;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +11,7 @@ namespace Server.ViewModel
     public class AdmonteServerViewModel : DependencyObject
     {
         #region Private fields
-        private AdmonteServer? _admonteServer;
+        private Engine? _engine;
         private BackgroundWorker backgroundWorker;
         #endregion
 
@@ -37,7 +37,7 @@ namespace Server.ViewModel
         {
             try
             {
-                this._admonteServer?.Start();
+                this._engine?.Start();
             }
             catch (Exception ex)
             {
@@ -51,15 +51,15 @@ namespace Server.ViewModel
         {
             try
             {
-                this._admonteServer = new AdmonteServer(this.ServerAddress, this.ServerPort);
+                this._engine = new Engine(this.ServerAddress, this.ServerPort);
 
                 #region subscribe to events
-                _admonteServer.OnMessageReceived += _admonteServer_OnMessageReceived;
-                _admonteServer.OnStart += _admonteServer_OnStart;
-                _admonteServer.OnStop += _admonteServer_OnStop;
-                _admonteServer.OnClientConnected += _admonteServer_OnClientConnected;
-                _admonteServer.OnWaitForClient += _admonteServer_OnWaitForClient;
-                _admonteServer.OnError += _admonteServer_OnError;
+                _engine.OnMessageReceived += _engine_OnMessageReceived;
+                _engine.OnStart += _engine_OnStart;
+                _engine.OnStop += _engine_OnStop;
+                _engine.OnClientConnected += _engine_OnClientConnected;
+                _engine.OnWaitForClient += _engine_OnWaitForClient;
+                _engine.OnError += _engine_OnError;
                 #endregion
 
                 backgroundWorker.WorkerSupportsCancellation = true;
@@ -76,7 +76,7 @@ namespace Server.ViewModel
 
         private bool CanStartServer()
         {
-            if (_admonteServer == null || !_admonteServer.IsStarted)
+            if (_engine == null || !_engine.IsStarted)
                 return true;
 
             return false;
@@ -85,7 +85,7 @@ namespace Server.ViewModel
         private void ExecuteStopServer()
         {
             backgroundWorker.CancelAsync();
-            this._admonteServer?.Stop();
+            this._engine?.Stop();
         }
 
         private bool CanStopServer()
@@ -95,32 +95,32 @@ namespace Server.ViewModel
         #endregion
 
         #region Server event handlers
-        private void _admonteServer_OnError(object? sender, EventArgs e)
+        private void _engine_OnError(object? sender, EventArgs e)
         {
             this.Dispatcher?.Invoke(() => LogMessages.Add("Internall server error."));
         }
 
-        private void _admonteServer_OnWaitForClient(object? sender, EventArgs e)
+        private void _engine_OnWaitForClient(object? sender, EventArgs e)
         {
             this.Dispatcher?.Invoke(() => LogMessages.Add("Waiting for a client."));
         }
 
-        private void _admonteServer_OnClientConnected(object? sender, EventArgs e)
+        private void _engine_OnClientConnected(object? sender, EventArgs e)
         {
             this.Dispatcher?.Invoke(() => LogMessages.Add("Client connected."));
         }
 
-        private void _admonteServer_OnStop(object? sender, EventArgs e)
+        private void _engine_OnStop(object? sender, EventArgs e)
         {
             this.Dispatcher?.Invoke(() => LogMessages.Add("Server stopped."));
         }
 
-        private void _admonteServer_OnStart(object? sender, EventArgs e)
+        private void _engine_OnStart(object? sender, EventArgs e)
         {
             this.Dispatcher?.Invoke(() => LogMessages.Add("Server started."));
         }
 
-        private void _admonteServer_OnMessageReceived(object? sender, AdmonteMessageEventArgs args)
+        private void _engine_OnMessageReceived(object? sender, AdmonteMessageEventArgs args)
         {
             this.Dispatcher?.Invoke(() => LogMessages.Add($"Message received:\n\tHost: {args.Host}, Port: {args.Port}\n\tMessage: {args.Message}\n"));
         }

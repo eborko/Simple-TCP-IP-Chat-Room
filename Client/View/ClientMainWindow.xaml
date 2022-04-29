@@ -14,13 +14,13 @@
             <Label  Margin="5">Port:</Label>
             <TextBox  Margin="5" x:Name="txtPort" Width="100"></TextBox>
 
-            <Button Margin="5" x:Name="btnConnect" Width="70" Click="btnConnect_Click">Connect</Button>
-            <Button Margin="5" x:Name="btnDisconnect" Width="90" Click="btnDisconnect_Click">Disconnect</Button>
+            <Button Margin="5" x:Name="btnConnect" Width="70">Connect</Button>
+            <Button Margin="5" x:Name="btnDisconnect" Width="90">Disconnect</Button>
         </StackPanel>
         <StackPanel Margin="5" DockPanel.Dock="Bottom" MaxWidth="600">
             <Label>Message:</Label>
             <TextBox Margin="5" x:Name="txtMessage"></TextBox>
-            <Button x:Name="btnSendMessage" Margin="5" Click="btnSendMessage_Click">Send Message</Button>
+            <Button x:Name="btnSendMessage" Margin="5">Send Message</Button>
             <Label>Status:</Label>
             <RichTextBox x:Name="rtbStatus" Margin="5" Height="100"></RichTextBox>
         </StackPanel>

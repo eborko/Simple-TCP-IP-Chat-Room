@@ -6,10 +6,15 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdmonteClient", "Client\AdmonteClient.csproj", "{1C0725CB-CDD0-4C05-A9C3-6DCB87D00C10}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdmonteServer", "Server\AdmonteServer.csproj", "{3778C663-08B6-4C80-B6D5-77E104C8BAC3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{062A4BDB-F7F7-4377-8A7A-82D50FEB112E} = {062A4BDB-F7F7-4377-8A7A-82D50FEB112E}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAdmonteClient", "TestAdmonteClient\TestAdmonteClient.csproj", "{4BFCE13E-1BD4-4887-B882-53E079AE5F01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAdmonteServer", "TestAdmonteServer\TestAdmonteServer.csproj", "{D96E67F5-BF36-469A-8175-E8FAA7157C0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedCodeLibrary", "SharedCodeLibrary\SharedCodeLibrary.csproj", "{062A4BDB-F7F7-4377-8A7A-82D50FEB112E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +38,10 @@ Global
 		{D96E67F5-BF36-469A-8175-E8FAA7157C0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D96E67F5-BF36-469A-8175-E8FAA7157C0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D96E67F5-BF36-469A-8175-E8FAA7157C0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{062A4BDB-F7F7-4377-8A7A-82D50FEB112E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{062A4BDB-F7F7-4377-8A7A-82D50FEB112E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{062A4BDB-F7F7-4377-8A7A-82D50FEB112E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{062A4BDB-F7F7-4377-8A7A-82D50FEB112E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

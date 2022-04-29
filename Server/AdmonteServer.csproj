@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Commands\" />
     <Folder Include="Model\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedCodeLibrary\SharedCodeLibrary.csproj" />
   </ItemGroup>
 
 </Project>

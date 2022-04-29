@@ -1,11 +1,7 @@
-﻿using System;
-using System.Windows;
-using System.Threading;
-using System.ComponentModel;
-using Server.Business;
+﻿using System.Windows;
 using Server.ViewModel;
 
-namespace Server.View
+namespace AdmonteServer.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

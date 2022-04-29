@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Server.Business
+namespace AdmonteServer.Business
 {
     public  class AdmonteMessageEventArgs : EventArgs
     {

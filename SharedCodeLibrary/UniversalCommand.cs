@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 using System.Windows.Input;
 
-namespace Server.Commands
+namespace SharedCodeLibrary
 {
     public class UniversalCommand : ICommand
     {
@@ -28,7 +24,7 @@ namespace Server.Commands
         {
             if (_TargetCanExecuteMethod != null)
                 return _TargetCanExecuteMethod();
-            
+
             return false;
         }
 

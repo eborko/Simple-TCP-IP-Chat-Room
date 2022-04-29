@@ -7,13 +7,13 @@ namespace Client.Business
     /// <summary>
     /// This class provides main logic for client app
     /// </summary>
-    public class AdmonteClient
+    public class Engine
     {
         private IPAddress? _serverAddress;
         private int _portNumber;
         private TcpClient? _client;
 
-        public AdmonteClient() 
+        public Engine() 
         {
             
         }

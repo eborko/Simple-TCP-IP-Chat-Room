@@ -1,4 +1,5 @@
 ﻿using Client.Business;
+using Client.ViewModel;
 using System;
 using System.Windows;
 namespace Client.View
@@ -8,72 +9,10 @@ namespace Client.View
     /// </summary>
     public partial class ClientMainWindow : Window
     {
-        AdmonteClient admonteClient;
-
         public ClientMainWindow()
         {
             InitializeComponent();
-
-            admonteClient = new AdmonteClient();
-            admonteClient.ClientConnected += AdmonteClient_ClientConnected;
-            admonteClient.ClientDisconnected += AdmonteClient_ClientDisconnected;
-            admonteClient.MessageSent += AdmonteClient_MessageSent;
-            admonteClient.ServerConnectionFailed += AdmonteClient_ServerConnectionFailed;
-
-            btnDisconnect.IsEnabled = false;
-            btnSendMessage.IsEnabled = false;
-        }
-
-        private void AdmonteClient_ServerConnectionFailed(object? sender, EventArgs e)
-        {
-            rtbStatus.AppendText("Server is not responding...\n");
-        }
-
-        private void AdmonteClient_MessageSent(object? sender, EventArgs e)
-        {
-            rtbStatus.AppendText("Message sent.\n");
-        }
-
-        private void AdmonteClient_ClientDisconnected(object? sender, EventArgs e)
-        {
-            rtbStatus.AppendText("Disconnected from the server\n");
-        }
-
-        private void AdmonteClient_ClientConnected(object? sender, EventArgs e)
-        {
-            rtbStatus.AppendText("Connected to the server.\n");
-        }
-
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (!admonteClient.ConnectTo(txtHost.Text, txtPort.Text)) return;
-            }
-            catch (ArgumentNullException ex)
-            {
-                rtbStatus.AppendText(ex.Message + "\n");
-                return;
-            }
-
-            btnConnect.IsEnabled = false;
-            btnSendMessage.IsEnabled = true;
-            btnDisconnect.IsEnabled = true;
-        }
-
-        private void btnDisconnect_Click(object sender, RoutedEventArgs e)
-        {
-            admonteClient.Disconnect();
-
-            btnDisconnect.IsEnabled = false;
-            btnConnect.IsEnabled = true;
-            btnSendMessage.IsEnabled = false;
-        }
-
-        private void btnSendMessage_Click(object sender, RoutedEventArgs e)
-        {
-            if (!admonteClient.SendMessage(txtMessage.Text))
-                rtbStatus.AppendText("Unable to send a message to the server.\n");
+            this.DataContext = new AdmonteClientViewModel();
         }
     }
 }
