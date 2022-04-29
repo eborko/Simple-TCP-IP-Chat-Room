@@ -14,7 +14,7 @@ namespace Server.Business
         // Port number to listen
         private readonly int _portNumber;
         private Socket _server;
-        public bool IsServerStarted { get; set; }
+        public bool IsStarted { get; private set; }
 
         /// <summary>
         /// Constructor of Server
@@ -42,15 +42,17 @@ namespace Server.Business
         public event EventHandler<EventArgs>? OnStop;
         public event EventHandler<EventArgs>? OnClientConnected;
         public event EventHandler<EventArgs>? OnWaitForClient;
+        public event EventHandler<EventArgs>? OnError;
         #endregion
 
         public void Start()
         {
             try
             {
+                IsStarted = true;
                 _server.Listen(10000);
                 OnStart?.Invoke(this, new EventArgs());
-                this.IsServerStarted = true;
+                
 
                 // Use default buffer size 8192
                 byte[] buffer = new byte[8192];
@@ -75,20 +77,17 @@ namespace Server.Business
                     client?.Close();
                 }
             }
-            catch (InvalidOperationException ex)
-            {
-                // TODOO: Log error
-            }
             catch (Exception ex)
             {
-                // TODOO: Log error
+                OnError?.Invoke(this, new EventArgs());
+                Stop();
             }
         }
 
         public void Stop()
         {
             _server?.Close();
-            IsServerStarted = false;
+            IsStarted = false;
             OnStop?.Invoke(this, new EventArgs());
         }
     }

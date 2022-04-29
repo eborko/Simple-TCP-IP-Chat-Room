@@ -2,6 +2,7 @@
 using Server.Commands;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 
@@ -23,7 +24,7 @@ namespace Server.ViewModel
         {
             backgroundWorker = new BackgroundWorker();
             backgroundWorker.DoWork += BackgroundWorker_DoWork;
-            LogMessages = new List<string>();
+            LogMessages = new ObservableCollection<string>();
 
             #region Init commands
             StartServerCommand = new UniversalCommand(executeMethod: ExecuteStartServer, canExecuteMethod: CanStartServer);
@@ -34,7 +35,15 @@ namespace Server.ViewModel
 
         private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
         {
-            this._admonteServer?.Start();
+            try
+            {
+                this._admonteServer?.Start();
+            }
+            catch (Exception ex)
+            {
+                Dispatcher?.Invoke(() => LogMessages.Add(ex.Message));
+            }
+
         }
 
         #region All Command related methods
@@ -45,11 +54,12 @@ namespace Server.ViewModel
                 this._admonteServer = new AdmonteServer(this.ServerAddress, this.ServerPort);
 
                 #region subscribe to events
-                _admonteServer.OnMessageReceived += ServerMessageReceived;
-                _admonteServer.OnStart += Server_OnStart;
-                _admonteServer.OnStop += Server_OnStop;
-                _admonteServer.OnClientConnected += Server_OnClientConnected;
-                _admonteServer.OnWaitForClient += Server_OnWaitForClient;
+                _admonteServer.OnMessageReceived += _admonteServer_OnMessageReceived;
+                _admonteServer.OnStart += _admonteServer_OnStart;
+                _admonteServer.OnStop += _admonteServer_OnStop;
+                _admonteServer.OnClientConnected += _admonteServer_OnClientConnected;
+                _admonteServer.OnWaitForClient += _admonteServer_OnWaitForClient;
+                _admonteServer.OnError += _admonteServer_OnError;
                 #endregion
 
                 backgroundWorker.WorkerSupportsCancellation = true;
@@ -58,19 +68,18 @@ namespace Server.ViewModel
                     backgroundWorker.RunWorkerAsync();
                 }
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                LogMessages.Add(ex.Message);
-            }
-            catch (ArgumentNullException ex)
-            {
-                LogMessages.Add(ex.Message);
+                this.Dispatcher?.Invoke(() => LogMessages.Add(ex.Message));
             }
         }
 
         private bool CanStartServer()
         {
-            return this._admonteServer == null;
+            if (_admonteServer == null || !_admonteServer.IsStarted)
+                return true;
+
+            return false;
         }
 
         private void ExecuteStopServer()
@@ -81,36 +90,39 @@ namespace Server.ViewModel
 
         private bool CanStopServer()
         {
-            if (this._admonteServer == null) return false;
-
-            return this._admonteServer.IsServerStarted;
+            return !CanStartServer();
         }
         #endregion
 
         #region Server event handlers
-        private void Server_OnWaitForClient(object? sender, EventArgs e)
+        private void _admonteServer_OnError(object? sender, EventArgs e)
         {
-            LogMessages.Add("Waiting for a client.");
+            this.Dispatcher?.Invoke(() => LogMessages.Add("Internall server error."));
         }
 
-        private void Server_OnClientConnected(object? sender, EventArgs e)
+        private void _admonteServer_OnWaitForClient(object? sender, EventArgs e)
         {
-            LogMessages.Add("Client connected.");
+            this.Dispatcher?.Invoke(() => LogMessages.Add("Waiting for a client."));
         }
 
-        private void Server_OnStop(object? sender, EventArgs e)
+        private void _admonteServer_OnClientConnected(object? sender, EventArgs e)
         {
-            LogMessages.Add("Server stopped.");
+            this.Dispatcher?.Invoke(() => LogMessages.Add("Client connected."));
         }
 
-        private void Server_OnStart(object? sender, EventArgs e)
+        private void _admonteServer_OnStop(object? sender, EventArgs e)
         {
-            LogMessages.Add("Server started.");
+            this.Dispatcher?.Invoke(() => LogMessages.Add("Server stopped."));
         }
 
-        private void ServerMessageReceived(object? sender, AdmonteMessageEventArgs args)
+        private void _admonteServer_OnStart(object? sender, EventArgs e)
         {
-            LogMessages.Add($"Message received:\n\tHost: {args.Host}, Port: {args.Port}\n\tMessage: {args.Message}\n");
+            this.Dispatcher?.Invoke(() => LogMessages.Add("Server started."));
+        }
+
+        private void _admonteServer_OnMessageReceived(object? sender, AdmonteMessageEventArgs args)
+        {
+            this.Dispatcher?.Invoke(() => LogMessages.Add($"Message received:\n\tHost: {args.Host}, Port: {args.Port}\n\tMessage: {args.Message}\n"));
         }
         #endregion
 
@@ -139,12 +151,12 @@ namespace Server.ViewModel
 
         public static readonly DependencyProperty LogMessagesProperty = DependencyProperty.Register(
             name: "LogMessages",
-            propertyType: typeof(IList<string>),
+            propertyType: typeof(ObservableCollection<string>),
             ownerType: typeof(AdmonteServerViewModel));
 
         public IList<string> LogMessages
         { 
-            get { return (IList<string>)GetValue(LogMessagesProperty); } 
+            get { return (ObservableCollection<string>)GetValue(LogMessagesProperty); } 
             set { SetValue(LogMessagesProperty, value); }
         }
         #endregion
