@@ -2,7 +2,7 @@
 using Client.ViewModel;
 using System;
 using System.Windows;
-namespace Client.View
+namespace AdmonteClient.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

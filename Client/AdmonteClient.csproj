@@ -9,6 +9,11 @@
 
   <ItemGroup>
     <Folder Include="Model\" />
+    <Folder Include="Commands\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedCodeLibrary\SharedCodeLibrary.csproj" />
   </ItemGroup>
 
 </Project>

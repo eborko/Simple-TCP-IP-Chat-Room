@@ -7,7 +7,7 @@ namespace AdmonteServer.Business
     /// <summary>
     /// Class AdmonteServer represents main logic for server app
     /// </summary>
-    public class Engine
+    public class ServerEngine
     {
         // IP address of server
         private readonly IPAddress? _hostAddress;
@@ -22,7 +22,7 @@ namespace AdmonteServer.Business
         /// <param name="hostAddress">Server address</param>
         /// <param name="portNumber">Port number to listen</param>
         /// <exception cref="ArgumentException">Throws <code>ArgumentException</code> if params are not valid</exception>
-        public Engine(string hostAddress, string portNumber)
+        public ServerEngine(string hostAddress, string portNumber)
         {
             // Try to parse address from string.
             if (!IPAddress.TryParse(hostAddress, out _hostAddress))

@@ -7,18 +7,26 @@ namespace Client.Business
     /// <summary>
     /// This class provides main logic for client app
     /// </summary>
-    public class Engine
+    public class ClientEngine
     {
         private IPAddress? _serverAddress;
         private int _portNumber;
         private TcpClient? _client;
+        public bool IsConnectedToServer
+        {
+            get
+            {
+                if (_client == null) return false;
+                return _client.Connected;
+            }
+        }
 
-        public Engine() 
+        public ClientEngine() 
         {
             
         }
 
-        public bool ConnectTo(string serverAddress, string portNumber)
+        public void ConnectTo(string serverAddress, string portNumber)
         {
             if (!IPAddress.TryParse(serverAddress, out _serverAddress))
                 throw new ArgumentNullException(nameof(_serverAddress));
@@ -30,54 +38,59 @@ namespace Client.Business
             try
             {
                 _client.Connect(_serverAddress, _portNumber);
+                if (_client.Connected)
+                    OnClientConnected?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
             {
-                ServerConnectionFailed?.Invoke(this, new EventArgs());
-                return false;
+                OnServerConnectionFailed?.Invoke(this, new EventArgs());
             }
-
-            if (_client.Connected)
-                ClientConnected?.Invoke(this, new EventArgs());
-            return true;
         }
 
         public void Disconnect()
         {
             _client?.Close();
-            ClientDisconnected?.Invoke(this, new EventArgs());
+            OnClientDisconnected?.Invoke(this, new EventArgs());
         }
 
         public bool SendMessage(string message)
         {
-            if (!_client.Connected)
+            if (_client != null && !_client.Connected)
             {
-                ServerConnectionFailed?.Invoke(this, new EventArgs());
+                OnServerConnectionFailed?.Invoke(this, new EventArgs());
                 return false;
             }
                 
             try
             {
+                if (_client == null)
+                {
+                    OnError?.Invoke(this, new EventArgs());
+                    return false;
+                }
+
                 NetworkStream stream = _client.GetStream();
                 if (stream == null) return false;
+
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
                 stream.Write(buffer, 0, buffer.Length);
 
-                MessageSent?.Invoke(this, new EventArgs());
+                OnMessageSent?.Invoke(this, new EventArgs());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // TODOO: Log error
+                OnError?.Invoke(this, new EventArgs());
             }
 
             return true;
         }
 
         #region Events
-        public event EventHandler<EventArgs>? MessageSent;
-        public event EventHandler<EventArgs>? ClientConnected;
-        public event EventHandler<EventArgs>? ClientDisconnected;
-        public event EventHandler<EventArgs>? ServerConnectionFailed;
+        public event EventHandler<EventArgs>? OnMessageSent;
+        public event EventHandler<EventArgs>? OnClientConnected;
+        public event EventHandler<EventArgs>? OnClientDisconnected;
+        public event EventHandler<EventArgs>? OnServerConnectionFailed;
+        public event EventHandler<EventArgs>? OnError;
         #endregion
     }
 }

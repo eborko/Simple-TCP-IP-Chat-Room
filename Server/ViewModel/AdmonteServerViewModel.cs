@@ -11,7 +11,7 @@ namespace Server.ViewModel
     public class AdmonteServerViewModel : DependencyObject
     {
         #region Private fields
-        private Engine? _engine;
+        private ServerEngine? _engine;
         private BackgroundWorker backgroundWorker;
         #endregion
 
@@ -51,7 +51,7 @@ namespace Server.ViewModel
         {
             try
             {
-                this._engine = new Engine(this.ServerAddress, this.ServerPort);
+                this._engine = new ServerEngine(this.ServerAddress, this.ServerPort);
 
                 #region subscribe to events
                 _engine.OnMessageReceived += _engine_OnMessageReceived;
