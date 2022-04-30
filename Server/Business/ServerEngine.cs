@@ -1,11 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace AdmonteServer.Business
 {
     /// <summary>
-    /// Class AdmonteServer represents main logic for server app
+    /// Class AdmonteServer represents main logic for the server app
     /// </summary>
     public class ServerEngine
     {
@@ -52,29 +54,30 @@ namespace AdmonteServer.Business
                 IsStarted = true;
                 _server.Listen(10000);
                 OnStart?.Invoke(this, new EventArgs());
-                
-
-                // Use default buffer size 8192
-                byte[] buffer = new byte[8192];
-                string? message = null;
 
                 while (true)
                 {
                     OnWaitForClient?.Invoke(this, new EventArgs());
-                    Socket client;
-                    client = _server.Accept();
+                    Socket client = _server.Accept();
 
                     OnClientConnected?.Invoke(this, new EventArgs());
 
-                    message = null;
+                    Task task = new Task(() =>
+                    {
+                        // Use default buffer size 8192
+                        byte[] buffer = new byte[8192];
+                        string message = null;
+                        int i = 0;
+                        while ((i = client.Receive(buffer, 0, buffer.Length, SocketFlags.None)) > 0)
+                        {
+                            message = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, i);
+                            if (message != "")
+                                OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, client.RemoteEndPoint.ToString(), _portNumber));
+                        }
+                        client.Close();
+                    });
 
-                    int i = client.Receive(buffer, 0, buffer.Length, SocketFlags.None);
-                    message = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, i);
-
-                    if (message != "")
-                        OnMessageReceived?.Invoke(this, new AdmonteMessageEventArgs(message, client.RemoteEndPoint.ToString(), _portNumber));
-                    
-                    client?.Close();
+                    task.Start();
                 }
             }
             catch (Exception ex)

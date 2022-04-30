@@ -27,6 +27,10 @@ namespace Client.ViewModel
             _engine.OnClientDisconnected += _engine_OnClientDisconnected;
             _engine.OnServerConnectionFailed += _engine_OnServerConnectionFailed;
             #endregion
+
+            // Testing
+            ServerAddress = "127.0.0.1";
+            ServerPort = "5444";
         }
 
         #region Client engine event handlers

@@ -31,6 +31,9 @@ namespace Server.ViewModel
             StopServerCommand = new UniversalCommand(executeMethod: ExecuteStopServer, canExecuteMethod: CanStopServer);
             #endregion
 
+            // Testing
+            ServerAddress = "127.0.0.1";
+            ServerPort = "5444";
         }
 
         private void BackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)

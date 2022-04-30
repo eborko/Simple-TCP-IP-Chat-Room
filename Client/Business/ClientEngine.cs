@@ -21,9 +21,9 @@ namespace Client.Business
             }
         }
 
-        public ClientEngine() 
+        public ClientEngine()
         {
-            
+
         }
 
         public void ConnectTo(string serverAddress, string portNumber)
@@ -41,7 +41,7 @@ namespace Client.Business
                 if (_client.Connected)
                     OnClientConnected?.Invoke(this, new EventArgs());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 OnServerConnectionFailed?.Invoke(this, new EventArgs());
             }
@@ -55,32 +55,28 @@ namespace Client.Business
 
         public bool SendMessage(string message)
         {
-            if (_client != null && !_client.Connected)
-            {
-                OnServerConnectionFailed?.Invoke(this, new EventArgs());
-                return false;
-            }
-                
-            try
-            {
-                if (_client == null)
-                {
-                    OnError?.Invoke(this, new EventArgs());
-                    return false;
-                }
-
-                NetworkStream stream = _client.GetStream();
-                if (stream == null) return false;
-
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
-                stream.Write(buffer, 0, buffer.Length);
-
-                OnMessageSent?.Invoke(this, new EventArgs());
-            }
-            catch (Exception)
+            if (_client == null)
             {
                 OnError?.Invoke(this, new EventArgs());
+                return false;
             }
+
+            NetworkStream stream = _client.GetStream();
+            if (stream == null || !_client.Connected)
+            {
+                ConnectTo(this._serverAddress.ToString(), this._portNumber.ToString());
+                stream = _client.GetStream();
+            }
+                
+
+            if (string.IsNullOrEmpty(message))
+                return false;
+
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
+            stream.Write(buffer, 0, buffer.Length);
+
+            OnMessageSent?.Invoke(this, new EventArgs());
+
 
             return true;
         }
